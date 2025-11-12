@@ -1,0 +1,109 @@
+### === Java / Spring Boot ===
+/build/
+/out/
+/target/
+/bin/
+/logs/
+/tmp/
+/*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*.class
+hs_err_pid*
+replay_pid*
+
+### === Gradle ===
+.gradle/
+/gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat
+!gradle/wrapper/gradle-wrapper.properties
+*.zip
+
+### === Maven Wrapper (por si existe) ===
+/mvnw
+/mvnw.cmd
+/.mvn/
+
+### === IDEs ===
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / STS
+.project
+.classpath
+.settings/
+.springBeans
+.apt_generated/
+.factorypath
+
+# VS Code
+.vscode/
+*.code-workspace
+
+### === OS Specific ===
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### === Docker / Containers ===
+/docker-compose.override.yml
+*.env
+.env.local
+.env.*
+.dockerignore
+docker/*.log
+docker/*.pid
+
+### === Tests / Reports ===
+/test-output/
+/surefire-reports/
+/jacoco.exec
+/coverage/
+*.coverage
+*.lcov
+
+### === Security / Credentials ===
+# Nunca subas contraseñas o llaves
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+*.truststore
+*.secret
+*.json
+*.yml
+*.yaml
+!src/main/resources/application.yml.example
+!src/main/resources/application.properties.example
+
+### === Node.js (por si usas frontend embebido) ===
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+
+### === System / Misc ===
+*.zip
+*.tar
+*.gz
+*.tgz
+*.7z
+*.rar
+*.bak

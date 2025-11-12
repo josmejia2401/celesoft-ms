@@ -1,0 +1,12 @@
+# Native image build (multi-stage)
+FROM ghcr.io/graalvm/jdk:ol8-java21 as build
+WORKDIR /app
+COPY . .
+RUN ./gradlew clean nativeCompile --no-daemon
+
+FROM alpine:3.20
+RUN apk add --no-cache libstdc++ ca-certificates && update-ca-certificates
+WORKDIR /app
+COPY --from=build /app/build/native/nativeCompile/celeste-users /app/celeste-users
+EXPOSE 8080
+ENTRYPOINT ["/app/celeste-users"]
