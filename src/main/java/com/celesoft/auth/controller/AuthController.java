@@ -43,9 +43,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public Mono<BaseDTO<String>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            return Mono.error(new BusinessException("Token de autorización inválido", HttpStatus.UNAUTHORIZED));
-        }
         return service.logout(authorization);
     }
 
