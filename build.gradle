@@ -6,9 +6,9 @@ plugins {
     id 'io.freefair.lombok' version '8.10'
 }
 
-group = 'com.celesoft'
+group = 'com.jac'
 version = '0.0.1-SNAPSHOT'
-description = 'CelesoftMS Service'
+description = 'JacMS Service'
 
 java {
     toolchain {
@@ -80,7 +80,7 @@ springBoot {
 graalvmNative {
     binaries {
         main {
-            imageName.set('celesoft-ms')
+            imageName.set('jac-ms')
             useFatJar.set(true)
             fallback.set(true)
         }
