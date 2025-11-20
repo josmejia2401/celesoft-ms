@@ -1,11 +1,15 @@
 package com.jac.users.service.impl;
 
 import com.jac.entities.security.UserEntity;
+import com.jac.users.dto.UpdatePasswordDTO;
+import com.jac.users.dto.UpdatePasswordResDTO;
 import com.jac.users.dto.UserDTO;
 import com.jac.users.mapper.UserMapper;
+import com.jac.users.repository.TokenRepository;
 import com.jac.users.repository.UserRepository;
 import com.jac.users.service.UserService;
 import com.jac.utils.Helpers;
+import com.jac.utils.dto.SecurityOptionsDTO;
 import com.jac.utils.enums.UserStatusEnum;
 import com.jac.utils.exceptions.BusinessException;
 import com.jac.utils.exceptions.ResourceNotFoundException;
@@ -15,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -22,9 +28,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final TokenRepository tokenRepository;
 
     @Override
-    public Mono<UserDTO> findById(Long id) {
+    public Mono<UserDTO> findById(Long id, SecurityOptionsDTO options) {
+        if (!id.equals(options.getUserId())) {
+            return Mono.error(new BusinessException("No autorizado para consultar este usuario", HttpStatus.FORBIDDEN));
+        }
         return repository.findById(id)
                 .map(mapper::toDto)
                 .switchIfEmpty(Mono.empty());
@@ -51,11 +61,11 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
-
-
-
     @Override
-    public Mono<UserDTO> update(Long id, UserDTO dto) {
+    public Mono<UserDTO> update(Long id, UserDTO dto, SecurityOptionsDTO options) {
+        if (!id.equals(options.getUserId())) {
+            return Mono.error(new BusinessException("No autorizado para actualizar este usuario", HttpStatus.FORBIDDEN));
+        }
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
                 .flatMap(existing -> {
@@ -66,14 +76,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<Void> delete(Long id) {
+    public Mono<UpdatePasswordResDTO> updatePassword(Long id, UpdatePasswordDTO dto, SecurityOptionsDTO options) {
+        if (!id.equals(options.getUserId())) {
+            return Mono.error(new BusinessException("No autorizado para actualizar contraseña de este usuario", HttpStatus.FORBIDDEN));
+        }
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
+                .flatMap(existing -> {
+                    if (!existing.getPassword().equals(dto.getPassword())) {
+                        return Mono.error(new BusinessException("La contraseña actual no es correcta", HttpStatus.FORBIDDEN));
+                    }
+                    if (Objects.equals(dto.getNewPassword(), existing.getPassword())) {
+                        return Mono.error(new BusinessException(
+                                "La nueva contraseña no puede ser igual a la anterior",
+                                HttpStatus.BAD_REQUEST
+                        ));
+                    }
+                    existing.setPassword(dto.getNewPassword());
+                    return repository.save(existing);
+                })
+                .map(p -> UpdatePasswordResDTO
+                        .builder()
+                        .message("Contraseña actualizada correctamente")
+                        .build());
+    }
+
+    @Override
+    public Mono<Void> delete(Long id, SecurityOptionsDTO options) {
+        if (!id.equals(options.getUserId())) {
+            return Mono.error(new BusinessException("No autorizado para eliminar este usuario", HttpStatus.FORBIDDEN));
+        }
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
                 .flatMap(existing -> {
                     existing.setStatusId(UserStatusEnum.DELETED.getId());
-                    // TODO: Eliminar todos los tokens asociados al usuario
                     return repository.save(existing);
                 })
+                .then(Mono.defer(() -> tokenRepository.deleteByUserId(id)))
                 .then();
     }
 }
