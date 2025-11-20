@@ -1,7 +1,7 @@
 package com.celesoft.auth.mapper;
 
 import com.celesoft.auth.dto.TokenDTO;
-import com.celesoft.entities.core.TokenEntity;
+import com.celesoft.entities.security.TokenEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

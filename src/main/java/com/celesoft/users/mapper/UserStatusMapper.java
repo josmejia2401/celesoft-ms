@@ -1,7 +1,7 @@
 package com.celesoft.users.mapper;
 
 
-import com.celesoft.entities.core.UserStatusEntity;
+import com.celesoft.entities.security.UserStatusEntity;
 import com.celesoft.users.dto.UserStatusDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

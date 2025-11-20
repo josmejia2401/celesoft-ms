@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -19,19 +18,6 @@ import reactor.core.publisher.Mono;
 public class UserController {
 
     private final UserService service;
-
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Flux<UserDTO> getAll(ServerWebExchange exchange) {
-        Claims claims = exchange.getAttribute("jwtClaims");
-        if (claims == null) {
-            return Flux.error(new BusinessException("Token no presente o inválido", HttpStatus.UNAUTHORIZED));
-        }
-        Object roleClaim = claims.get("role");
-        if (roleClaim == null || !roleClaim.equals("admin")) {
-            return Flux.error(new BusinessException("Token inválido: no contiene role", HttpStatus.UNAUTHORIZED));
-        }
-        return service.findAll();
-    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<UserDTO> getById(@PathVariable Long id, ServerWebExchange exchange) {
@@ -54,7 +40,6 @@ public class UserController {
         }
         return service.findById(id);
     }
-
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<UserDTO> create(@Valid @RequestBody UserDTO dto) {

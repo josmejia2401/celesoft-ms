@@ -1,4 +1,4 @@
-package com.celesoft.utils;
+package com.celesoft.utils.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +15,16 @@ public enum UserStatusEnum {
     DELETED(4L, "Eliminado"),
     PENDING(5L, "Pendiente de activación");
 
-    private final Long code;
+    private final Long id;
     private final String description;
 
-    public static UserStatusEnum fromCode(Long code) {
+    public static UserStatusEnum fromId(Long id) {
         for (UserStatusEnum status : values()) {
-            if (Objects.equals(status.getCode(), code)) {
+            if (Objects.equals(status.getId(), id)) {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Código de estado de usuario inválido: " + code);
+        throw new IllegalArgumentException("Código de estado de usuario inválido: " + id);
     }
 }
 

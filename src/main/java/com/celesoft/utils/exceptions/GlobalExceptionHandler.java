@@ -1,11 +1,8 @@
 package com.celesoft.utils.exceptions;
 
-import io.r2dbc.spi.R2dbcException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
@@ -30,7 +27,7 @@ public class GlobalExceptionHandler {
 
         String message = String.format("Validation failed for %d field(s)", fieldErrors.size());
 
-        log.warn("❗ Validation error at [{}]: {} | Fields: {}",
+        log.warn("Validation error at [{}]: {} | Fields: {}",
                 exchange.getRequest().getPath().value(),
                 message,
                 fieldErrors.stream().map(FieldValidationError::toString).collect(Collectors.joining(", ")));
@@ -48,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public Mono<ResponseEntity<ApiError>> handleNotFound(ResourceNotFoundException ex, ServerWebExchange exchange) {
-        log.warn("⚠️ Resource not found: {} | Path: {}", ex.getMessage(), exchange.getRequest().getPath().value());
+        log.warn("Resource not found: {} | Path: {}", ex.getMessage(), exchange.getRequest().getPath().value());
 
         ApiError error = ApiError.builder()
                 .timestamp(LocalDateTime.now())
@@ -73,26 +70,74 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(status).body(error));
     }
 
-    @ExceptionHandler({ R2dbcException.class, DataAccessException.class, BadSqlGrammarException.class })
-    public Mono<ResponseEntity<ApiError>> handleDatabaseErrors(Exception ex, ServerWebExchange exchange) {
+    @ExceptionHandler(org.springframework.web.server.MissingRequestValueException.class)
+    public Mono<ResponseEntity<ApiError>> handleMissingRequestValue(
+            org.springframework.web.server.MissingRequestValueException ex,
+            ServerWebExchange exchange) {
 
-        // 🔹 Log completo del error con stacktrace
-        log.error("💥 Error de base de datos {}", ex.getMessage(), ex);
+        String message = ex.getReason() != null
+                ? ex.getReason()
+                : "Parámetro requerido no fue enviado.";
+
+        log.warn("Missing request value at [{}]: {}",
+                exchange.getRequest().getPath().value(), message);
 
         ApiError error = ApiError.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error("Database Error")
-                .message("Error interno en la base de datos. Intente nuevamente o contacte soporte.")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(message)
                 .build();
 
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error));
+    }
+
+    @ExceptionHandler({
+            org.springframework.data.mongodb.UncategorizedMongoDbException.class,
+            org.springframework.data.mongodb.MongoTransactionException.class,
+            com.mongodb.MongoException.class,
+            com.mongodb.MongoWriteException.class,
+            com.mongodb.MongoCommandException.class,
+            com.mongodb.MongoWriteConcernException.class,
+            com.mongodb.MongoTimeoutException.class,
+            org.springframework.dao.DuplicateKeyException.class,
+            org.springframework.dao.DataAccessException.class
+    })
+    public Mono<ResponseEntity<ApiError>> handleMongoErrors(Exception ex, ServerWebExchange exchange) {
+
+        log.error("MongoDB error at [{}]: {}",
+                exchange.getRequest().getPath().value(),
+                ex.getMessage(),
+                ex);
+
+        ApiError error = ApiError.builder()
+                .timestamp(LocalDateTime.now())
+                .error("Database Error")
+                .build();
+
+        if (ex instanceof org.springframework.dao.DuplicateKeyException) {
+            error.setStatus(HttpStatus.CONFLICT.value());
+            error.setMessage("Registro duplicado. Verifique los datos enviados.");
+            return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(error));
+        }
+
+        if (ex instanceof com.mongodb.MongoTimeoutException) {
+            error.setStatus(HttpStatus.GATEWAY_TIMEOUT.value());
+            error.setMessage("Tiempo de espera agotado al comunicarse con la base de datos.");
+            return Mono.just(ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(error));
+        }
+
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage("Error interno en la base de datos.");
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error));
     }
+
+
 
     @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ApiError>> handleGeneral(Exception ex, ServerWebExchange exchange) {
 
-        log.error("🔥 Unexpected error: {}", ex.getMessage(), ex);
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
 
         ApiError error = ApiError.builder()
                 .timestamp(LocalDateTime.now())

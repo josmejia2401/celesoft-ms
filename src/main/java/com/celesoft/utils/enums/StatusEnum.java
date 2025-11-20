@@ -1,4 +1,4 @@
-package com.celesoft.utils;
+package com.celesoft.utils.enums;
 
 import java.util.Arrays;
 import java.util.Map;

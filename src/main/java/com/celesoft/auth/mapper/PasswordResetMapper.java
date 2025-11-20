@@ -1,7 +1,7 @@
 package com.celesoft.auth.mapper;
 
 import com.celesoft.auth.dto.PasswordResetDTO;
-import com.celesoft.entities.core.PasswordResetEntity;
+import com.celesoft.entities.security.PasswordResetEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -1,9 +1,15 @@
 package com.celesoft.users.repository;
 
-import com.celesoft.entities.core.UserEntity;
+import com.celesoft.entities.security.UserEntity;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface UserRepository extends ReactiveCrudRepository<UserEntity, Long> {
+    @Query("SELECT * FROM users WHERE username = :username")
+    Mono<UserEntity> findByUsername(String username);
+
+    Mono<Boolean> existsByUsername(String username);
 }

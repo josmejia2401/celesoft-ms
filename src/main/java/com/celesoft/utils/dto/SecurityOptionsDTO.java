@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseMetaDTO {
-    private Integer page;
-    private Integer size;
-    private Long totalItems;
-    private Integer totalPages;
-    private Boolean hasNext;
-    private Boolean hasPrev;
+public class SecurityOptionsDTO {
+    private Long userId;
+    private Long tokenId;
+    private String audience;
+    private String appName;
+    private String role;
 }
