@@ -88,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
                     return Mono.just(user);
                 })
                 .flatMap(user -> userRepository.save(userMapper.toEntity(user))
-                        .then(tokenRepository.deleteByUserIdAndAudienceAndAppName(user.getId(), request.getAudience(), request.getAppName()))
+                        .then(Mono.defer(() -> tokenRepository.deleteByUserIdAndAudienceAndAppName(user.getId(), request.getAudience(), request.getAppName())))
                         .then(Mono.defer(() -> {
                             Long tokenId = Helpers.generateUniqueNumberDataBase();
                             String accessToken = JwtUtil.generateToken(
