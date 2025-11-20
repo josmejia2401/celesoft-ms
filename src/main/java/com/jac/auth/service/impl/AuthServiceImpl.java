@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
                                     user.getUsername(),
                                     String.valueOf(tokenId),
                                     user.getId(),
-                                    user.getSecurity().getRole(),
+                                    user.getSecurity().getRoles(),
                                     request.getAudience(),
                                     request.getAppName()
                             );

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Data
 @Builder
@@ -15,5 +16,5 @@ public class UserSecurityDTO {
     private Integer loginAttempts;
     private Instant lockedUntil;
     private Instant lastLoginAt;
-    private String role;
+    private Set<String> roles;
 }

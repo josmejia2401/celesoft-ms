@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Set;
 
 @Log4j2
 @UtilityClass
@@ -23,14 +24,14 @@ public class JwtUtil {
     private static final String SECRET = "Jdjf93kL5z8RrjN4Uq3s+w93HkfPxAvMUpEE6nKkt+0=";
     private static final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
 
-    public static String generateToken(String subject, String tokenId, Long userId, String role, String audience, String appName) {
+    public static String generateToken(String subject, String tokenId, Long userId, Set<String> roles, String audience, String appName) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(subject)
                 .id(tokenId)
                 .audience().add(audience).and()
                 .issuer(appName)
-                .claim("role", role)
+                .claim("roles", roles)
                 .claim("userId", userId)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(3600))) // 1h

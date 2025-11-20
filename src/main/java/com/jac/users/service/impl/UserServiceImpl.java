@@ -4,12 +4,14 @@ import com.jac.entities.security.UserEntity;
 import com.jac.users.dto.UpdatePasswordDTO;
 import com.jac.users.dto.UpdatePasswordResDTO;
 import com.jac.users.dto.UserDTO;
+import com.jac.users.dto.UserSecurityDTO;
 import com.jac.users.mapper.UserMapper;
 import com.jac.users.repository.TokenRepository;
 import com.jac.users.repository.UserRepository;
 import com.jac.users.service.UserService;
 import com.jac.utils.Helpers;
 import com.jac.utils.dto.SecurityOptionsDTO;
+import com.jac.utils.enums.UserRolesEnum;
 import com.jac.utils.enums.UserStatusEnum;
 import com.jac.utils.exceptions.BusinessException;
 import com.jac.utils.exceptions.ResourceNotFoundException;
@@ -19,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +55,28 @@ public class UserServiceImpl implements UserService {
                                 HttpStatus.CONFLICT
                         ));
                     }
+
+                    Set<String> roles = dto.getSecurity() != null
+                            ? new HashSet<>(dto.getSecurity().getRoles())
+                            : new HashSet<>();
+
+                    if (roles.isEmpty()) {
+                        roles.add(UserRolesEnum.USER.code());
+                    }
+
+                    for (String role : roles) {
+                        if (UserRolesEnum.fromCode(role) == null) {
+                            return Mono.error(new IllegalArgumentException("Invalid role: " + role));
+                        }
+                    }
+
                     dto.setId(Helpers.generateUniqueNumberDataBase());
                     dto.setStatusId(UserStatusEnum.PENDING.getId());
                     dto.setUsername(username);
+                    dto.setSecurity(UserSecurityDTO
+                            .builder()
+                            .roles(roles)
+                            .build());
                     UserEntity entity = mapper.toEntity(dto);
                     log.info("Saving new user id={} username={}", dto.getId(), dto.getUsername());
                     return repository.save(entity)
@@ -66,6 +89,21 @@ public class UserServiceImpl implements UserService {
         if (!id.equals(options.getUserId())) {
             return Mono.error(new BusinessException("No autorizado para actualizar este usuario", HttpStatus.FORBIDDEN));
         }
+        Set<String> roles = dto.getSecurity() != null
+                ? new HashSet<>(dto.getSecurity().getRoles())
+                : new HashSet<>();
+        if (roles.isEmpty()) {
+            roles.add(UserRolesEnum.USER.code());
+        }
+        for (String role : roles) {
+            if (UserRolesEnum.fromCode(role) == null) {
+                return Mono.error(new IllegalArgumentException("Invalid role: " + role));
+            }
+        }
+        if (dto.getSecurity() == null) {
+            dto.setSecurity(new UserSecurityDTO());
+        }
+        dto.getSecurity().setRoles(roles);
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
                 .flatMap(existing -> {

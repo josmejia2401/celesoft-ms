@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Data
 @Builder
@@ -17,5 +18,5 @@ public class UserSecurityEntity {
     private Integer loginAttempts;
     private Instant lockedUntil;
     private Instant lastLoginAt;
-    private String role;
+    private Set<String> roles;
 }
