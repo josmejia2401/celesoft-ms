@@ -1,12 +1,13 @@
-package com.celesoft.entities.security;
+package com.jac.entities.security;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import lombok.Data;
+
+import java.time.Instant;
 
 @Data
 @Builder
@@ -18,6 +19,6 @@ public class AccountActivationEntity {
     private Long id;
     private Long userId;
     private String token;
-    private LocalDateTime expiresAt;
-    private LocalDateTime createdAt;
+    private Instant expiresAt;
+    private Instant createdAt;
 }

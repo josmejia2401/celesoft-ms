@@ -1,7 +1,6 @@
-package com.celesoft.users.service;
+package com.jac.users.service;
 
-import com.celesoft.users.dto.UserDTO;
-import reactor.core.publisher.Flux;
+import com.jac.users.dto.UserDTO;
 import reactor.core.publisher.Mono;
 
 public interface UserService {

@@ -1,4 +1,4 @@
-package com.celesoft.users.dto;
+package com.jac.users.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.celesoft.users.dto;
+package com.jac.users.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -41,5 +41,5 @@ public class UserDTO {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 }

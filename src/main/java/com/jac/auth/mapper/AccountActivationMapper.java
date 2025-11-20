@@ -1,8 +1,8 @@
-package com.celesoft.auth.mapper;
+package com.jac.auth.mapper;
 
 
-import com.celesoft.auth.dto.AccountActivationDTO;
-import com.celesoft.entities.security.AccountActivationEntity;
+import com.jac.auth.dto.AccountActivationDTO;
+import com.jac.entities.security.AccountActivationEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

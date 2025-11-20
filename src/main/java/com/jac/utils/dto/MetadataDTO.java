@@ -1,4 +1,4 @@
-package com.celesoft.utils.dto;
+package com.jac.utils.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

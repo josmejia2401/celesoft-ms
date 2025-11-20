@@ -1,11 +1,11 @@
-package com.celesoft;
+package com.jac;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CelesteUsersApplication {
+public class JacApplication {
     public static void main(String[] args) {
-        SpringApplication.run(CelesteUsersApplication.class, args);
+        SpringApplication.run(JacApplication.class, args);
     }
 }

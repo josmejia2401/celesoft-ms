@@ -1,4 +1,4 @@
-package com.celesoft.utils.exceptions;
+package com.jac.utils.exceptions;
 
 import org.springframework.http.HttpStatus;
 

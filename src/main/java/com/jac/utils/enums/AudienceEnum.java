@@ -1,4 +1,4 @@
-package com.celesoft.utils.enums;
+package com.jac.utils.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

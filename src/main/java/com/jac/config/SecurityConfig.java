@@ -1,4 +1,4 @@
-package com.celesoft.config;
+package com.jac.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.web.server.WebFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final com.celesoft.utils.security.JwtAuthenticationWebFilter jwtFilter;
+    private final com.jac.utils.security.JwtAuthenticationWebFilter jwtFilter;
 
     @Bean
     public WebFilter jwtSecurityFilter() {

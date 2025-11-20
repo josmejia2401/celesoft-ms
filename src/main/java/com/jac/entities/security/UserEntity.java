@@ -1,11 +1,14 @@
-package com.celesoft.entities.security;
+package com.jac.entities.security;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -25,5 +28,5 @@ public class UserEntity {
     private UserSecurityEntity security;
     private Long statusId;
     private Long previousStatusId;
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 }

@@ -1,4 +1,4 @@
-package com.celesoft.entities.security;
+package com.jac.entities.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -15,7 +15,7 @@ import java.time.OffsetDateTime;
 @Document(collection = "user_security")
 public class UserSecurityEntity {
     private Integer loginAttempts;
-    private OffsetDateTime lockedUntil;
-    private OffsetDateTime lastLoginAt;
+    private Instant lockedUntil;
+    private Instant lastLoginAt;
     private String role;
 }

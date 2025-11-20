@@ -1,4 +1,4 @@
-package com.celesoft.utils.exceptions;
+package com.jac.utils.exceptions;
 
 import lombok.Builder;
 import lombok.Data;

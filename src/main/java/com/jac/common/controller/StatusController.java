@@ -1,9 +1,12 @@
-package com.celesoft.common.controller;
+package com.jac.common.controller;
 
-import com.celesoft.common.dto.StatusDTO;
-import com.celesoft.common.service.StatusService;
+import com.jac.common.dto.StatusDTO;
+import com.jac.common.service.StatusService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

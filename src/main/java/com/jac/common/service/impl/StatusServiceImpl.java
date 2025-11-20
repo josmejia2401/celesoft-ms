@@ -1,10 +1,10 @@
-package com.celesoft.common.service.impl;
+package com.jac.common.service.impl;
 
-import com.celesoft.common.dto.StatusDTO;
-import com.celesoft.common.mapper.StatusMapper;
-import com.celesoft.common.service.StatusService;
-import com.celesoft.utils.enums.StatusEnum;
-import com.celesoft.utils.exceptions.BusinessException;
+import com.jac.common.dto.StatusDTO;
+import com.jac.common.mapper.StatusMapper;
+import com.jac.common.service.StatusService;
+import com.jac.utils.enums.StatusEnum;
+import com.jac.utils.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

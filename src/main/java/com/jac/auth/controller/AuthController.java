@@ -1,10 +1,10 @@
-package com.celesoft.auth.controller;
+package com.jac.auth.controller;
 
-import com.celesoft.utils.JwtUtil;
-import com.celesoft.auth.dto.LogInDTO;
-import com.celesoft.auth.dto.LogInResponseDTO;
-import com.celesoft.auth.service.AuthService;
-import com.celesoft.utils.exceptions.BusinessException;
+import com.jac.auth.dto.LogInDTO;
+import com.jac.auth.dto.LogInResponseDTO;
+import com.jac.auth.service.AuthService;
+import com.jac.utils.JwtUtil;
+import com.jac.utils.exceptions.BusinessException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
-package com.celesoft.auth.service;
+package com.jac.auth.service;
 
-import com.celesoft.auth.dto.LogInDTO;
-import com.celesoft.auth.dto.LogInResponseDTO;
-import com.celesoft.utils.dto.SecurityOptionsDTO;
+import com.jac.auth.dto.LogInDTO;
+import com.jac.auth.dto.LogInResponseDTO;
+import com.jac.utils.dto.SecurityOptionsDTO;
 import reactor.core.publisher.Mono;
 
 public interface AuthService {

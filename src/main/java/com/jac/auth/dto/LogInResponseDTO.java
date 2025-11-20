@@ -1,4 +1,4 @@
-package com.celesoft.auth.dto;
+package com.jac.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,8 @@
 -- Crear esquema
-CREATE SCHEMA IF NOT EXISTS celesoft;
+CREATE SCHEMA IF NOT EXISTS jac;
 
 -- Cambiar a ese esquema
-SET search_path TO celesoft;
+SET search_path TO jac;
 
 CREATE TABLE IF NOT EXISTS user_status (
     id BIGINT PRIMARY KEY,

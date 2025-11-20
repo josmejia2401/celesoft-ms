@@ -1,11 +1,11 @@
-package com.celesoft.utils.security;
+package com.jac.utils.security;
 
-import com.celesoft.auth.dto.TokenDTO;
-import com.celesoft.auth.repository.TokenAuthRepository;
-import com.celesoft.utils.JwtUtil;
-import com.celesoft.utils.exceptions.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.jac.auth.dto.TokenDTO;
+import com.jac.auth.repository.TokenAuthRepository;
+import com.jac.utils.JwtUtil;
+import com.jac.utils.exceptions.ApiError;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +18,13 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -46,34 +50,58 @@ public class JwtAuthenticationWebFilter implements WebFilter {
         final String path = exchange.getRequest().getURI().getPath();
         final String method = Objects.requireNonNullElse(exchange.getRequest().getMethod(), HttpMethod.GET).name();
 
+        log.debug("[FILTER] Request received: {} {}", method, path);
+
         if (isPublicEndpoint(path, method)) {
+            log.debug("[FILTER] Public endpoint detected -> skipping auth: {} {}", method, path);
             return chain.filter(exchange);
         }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return unauthorized(exchange, "Missing or invalid Authorization header");
+        if (authHeader == null) {
+            log.warn("[FILTER] Authorization header missing for path {}", path);
+            return unauthorized(exchange, "Missing Authorization header");
+        }
+        //USER 251120802280
+        //TOKEN 251120066029
+
+        if (!authHeader.startsWith("Bearer ")) {
+            log.warn("[FILTER] Invalid Authorization format: {}", authHeader);
+            return unauthorized(exchange, "Invalid Authorization format");
         }
 
         String token = authHeader.substring(7);
+        log.debug("[FILTER] Extracted token: {}", token);
 
-        return Mono.defer(() -> decodeAndValidateToken(token))
-                .flatMap(claims -> validateTokenInDatabase(token, claims))
+        return Mono.defer(() -> {
+                    log.debug("[FILTER] Decoding token...");
+                    return decodeAndValidateToken(token);
+                })
                 .flatMap(claims -> {
+                    log.debug("[FILTER] Token decoded for subject={} jti={}", claims.getSubject(), claims.getId());
+                    return validateTokenInDatabase(token, claims);
+                })
+                .flatMap(claims -> {
+                    log.debug("[FILTER] Token validated successfully for user {}", claims.getSubject());
                     exchange.getAttributes().put("jwtClaims", claims);
                     return chain.filter(exchange);
                 })
                 .onErrorResume(ex -> {
-                    log.warn("Auth error: {}", ex.getMessage());
+                    log.warn("[FILTER] Authentication error: {}", ex.getMessage());
                     return unauthorized(exchange, ex.getMessage());
                 });
     }
 
     private Mono<Claims> decodeAndValidateToken(String token) {
+        log.debug("[TOKEN] Decoding and validating expiration...");
         return Mono.fromCallable(() -> JwtUtil.decodeToken(token))
                 .flatMap(claims -> {
+                    log.debug("[TOKEN] Claims decoded: sub={} jti={} exp={}",
+                            claims.getSubject(), claims.getId(), claims.getExpiration());
+
                     if (claims.getExpiration().before(new Date())) {
+                        log.warn("[TOKEN] Token expired at {}", claims.getExpiration());
                         return Mono.error(new RuntimeException("Token expired"));
                     }
                     return Mono.just(claims);
@@ -83,38 +111,63 @@ public class JwtAuthenticationWebFilter implements WebFilter {
     private Mono<Claims> validateTokenInDatabase(String token, Claims claims) {
         Long jti = Long.valueOf(claims.getId());
 
+        log.debug("[DB] Looking for token in cache: jti={}", jti);
+
         TokenDTO cached = tokenCache.getIfPresent(jti);
-        if (cached != null && cached.getAccessToken().equals(token)) {
-            return Mono.just(claims);
+        if (cached != null) {
+            log.debug("[DB] Token found in cache for jti={}", jti);
+
+            if (cached.getAccessToken().equals(token)) {
+                log.debug("[DB] Cached token matches -> OK");
+                return Mono.just(claims);
+            } else {
+                log.warn("[DB] Cached token mismatch for jti={}", jti);
+            }
         }
 
+        log.debug("[DB] Token not cached, searching in database... jti={}", jti);
+
         return tokenAuthRepository.findById(jti)
-                .switchIfEmpty(Mono.error(new RuntimeException("Token not found")))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("[DB] Token NOT FOUND in database for jti={}", jti);
+                    return Mono.error(new RuntimeException("Token not found"));
+                }))
                 .flatMap(entity -> {
+                    log.debug("[DB] Token found in DB for jti={} | comparing tokens...", jti);
+
                     if (!entity.getAccessToken().equals(token)) {
+                        log.warn("[DB] Token mismatch for jti={} -> DB token != Provided token", jti);
                         return Mono.error(new RuntimeException("Token does not match"));
                     }
 
-                    tokenCache.put(jti, TokenDTO
-                            .builder()
-                                    .accessToken(entity.getAccessToken())
-                                    .appName(entity.getAppName())
-                                    .audience(entity.getAudience())
-                                    .id(entity.getId())
-                                    .createdAt(entity.getCreatedAt())
-                                    .expiresAt(entity.getExpiresAt())
-                                    .userId(entity.getUserId())
-                            .build());
+                    log.debug("[DB] Token matches. Caching token for jti={}", jti);
+
+                    tokenCache.put(jti, TokenDTO.builder()
+                            .accessToken(entity.getAccessToken())
+                            .appName(entity.getAppName())
+                            .audience(entity.getAudience())
+                            .id(entity.getId())
+                            .createdAt(entity.getCreatedAt())
+                            .expiresAt(entity.getExpiresAt())
+                            .userId(entity.getUserId())
+                            .build()
+                    );
+
                     return Mono.just(claims);
                 });
     }
 
     private boolean isPublicEndpoint(String path, String method) {
-        return PUBLIC_ENDPOINTS.entrySet().stream()
+        boolean result = PUBLIC_ENDPOINTS.entrySet().stream()
                 .anyMatch(entry -> path.endsWith(entry.getKey()) && entry.getValue().contains(method));
+
+        log.debug("[PUBLIC CHECK] Path={} Method={} IsPublic={}", path, method, result);
+        return result;
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
+        log.warn("[UNAUTHORIZED] Returning 401: {}", message);
+
         ApiError error = ApiError.builder()
                 .timestamp(LocalDateTime.now())
                 .status(401)
@@ -126,10 +179,13 @@ public class JwtAuthenticationWebFilter implements WebFilter {
         try {
             bytes = objectMapper.writeValueAsBytes(error);
         } catch (Exception e) {
+            log.error("[UNAUTHORIZED] Error serializing ApiError: {}", e.getMessage());
             bytes = ("{\"message\":\"" + message + "\"}").getBytes(StandardCharsets.UTF_8);
         }
+
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+
         return exchange.getResponse()
                 .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
     }

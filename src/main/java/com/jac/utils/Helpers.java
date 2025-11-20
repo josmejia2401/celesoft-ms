@@ -1,4 +1,4 @@
-package com.celesoft.utils;
+package com.jac.utils;
 
 import lombok.experimental.UtilityClass;
 

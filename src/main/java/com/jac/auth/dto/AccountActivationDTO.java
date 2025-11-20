@@ -1,11 +1,11 @@
-package com.celesoft.auth.dto;
+package com.jac.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -15,6 +15,6 @@ public class AccountActivationDTO {
     private Long id;
     private Long userId;
     private String token;
-    private LocalDateTime expiresAt;
-    private LocalDateTime createdAt;
+    private Instant expiresAt;
+    private Instant createdAt;
 }

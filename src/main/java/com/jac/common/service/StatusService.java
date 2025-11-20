@@ -1,6 +1,6 @@
-package com.celesoft.common.service;
+package com.jac.common.service;
 
-import com.celesoft.common.dto.StatusDTO;
+import com.jac.common.dto.StatusDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

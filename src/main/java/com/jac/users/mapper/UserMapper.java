@@ -1,8 +1,11 @@
-package com.celesoft.users.mapper;
+package com.jac.users.mapper;
 
-import com.celesoft.entities.security.UserEntity;
-import com.celesoft.users.dto.UserDTO;
-import org.mapstruct.*;
+import com.jac.entities.security.UserEntity;
+import com.jac.users.dto.UserDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
         componentModel = "spring",

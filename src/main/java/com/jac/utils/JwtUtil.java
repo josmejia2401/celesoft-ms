@@ -1,7 +1,7 @@
-package com.celesoft.utils;
+package com.jac.utils;
 
-import com.celesoft.utils.dto.SecurityOptionsDTO;
-import com.celesoft.utils.exceptions.BusinessException;
+import com.jac.utils.dto.SecurityOptionsDTO;
+import com.jac.utils.exceptions.BusinessException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

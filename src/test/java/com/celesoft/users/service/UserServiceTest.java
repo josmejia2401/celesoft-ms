@@ -1,7 +1,8 @@
-package com.celesoft.users.service;
+package com.jac.users.service;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserServiceTest {
 

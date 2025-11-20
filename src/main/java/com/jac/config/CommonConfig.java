@@ -1,8 +1,8 @@
-package com.celesoft.config;
+package com.jac.config;
 
-import com.celesoft.auth.dto.TokenDTO;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.jac.auth.dto.TokenDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

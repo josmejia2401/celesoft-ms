@@ -1,3 +1,3 @@
-package com.celesoft.utils.exceptions;
+package com.jac.utils.exceptions;
 
 public record FieldValidationError(String field, String message) {}

@@ -1,14 +1,14 @@
-package com.celesoft.users.service.impl;
+package com.jac.users.service.impl;
 
-import com.celesoft.entities.security.UserEntity;
-import com.celesoft.users.dto.UserDTO;
-import com.celesoft.users.mapper.UserMapper;
-import com.celesoft.users.repository.UserRepository;
-import com.celesoft.users.service.UserService;
-import com.celesoft.utils.Helpers;
-import com.celesoft.utils.enums.UserStatusEnum;
-import com.celesoft.utils.exceptions.BusinessException;
-import com.celesoft.utils.exceptions.ResourceNotFoundException;
+import com.jac.entities.security.UserEntity;
+import com.jac.users.dto.UserDTO;
+import com.jac.users.mapper.UserMapper;
+import com.jac.users.repository.UserRepository;
+import com.jac.users.service.UserService;
+import com.jac.utils.Helpers;
+import com.jac.utils.enums.UserStatusEnum;
+import com.jac.utils.exceptions.BusinessException;
+import com.jac.utils.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;

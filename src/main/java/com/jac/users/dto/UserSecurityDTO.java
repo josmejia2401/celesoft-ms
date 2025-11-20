@@ -1,11 +1,11 @@
-package com.celesoft.users.dto;
+package com.jac.users.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  * DTO que representa la información de seguridad asociada a un usuario.
@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class UserSecurityDTO {
     private Integer loginAttempts;
-    private OffsetDateTime lockedUntil;
-    private OffsetDateTime lastLoginAt;
+    private Instant lockedUntil;
+    private Instant lastLoginAt;
     private String role;
 }

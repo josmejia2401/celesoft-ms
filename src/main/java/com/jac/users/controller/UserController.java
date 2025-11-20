@@ -1,8 +1,8 @@
-package com.celesoft.users.controller;
+package com.jac.users.controller;
 
-import com.celesoft.users.dto.UserDTO;
-import com.celesoft.users.service.UserService;
-import com.celesoft.utils.exceptions.BusinessException;
+import com.jac.users.dto.UserDTO;
+import com.jac.users.service.UserService;
+import com.jac.utils.exceptions.BusinessException;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.celesoft.auth.dto;
+package com.jac.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
